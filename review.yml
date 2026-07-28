@@ -1,0 +1,544 @@
+aid: jetblue
+name: JetBlue
+review:
+  question: >-
+    Does JetBlue expose a public developer portal, a documented consumer or
+    distribution API, or a downloadable OpenAPI / NDC schema — and what would
+    it cost a travel seller to leave JetBlue's distribution channel?
+  answer: false
+  date: '2026-07-28'
+  reviewer: API Evangelist
+findings:
+  summary: |
+    JetBlue Airways publishes no public developer portal, no API reference,
+    and no downloadable machine-readable API contract of any kind. The
+    candidate developer hosts developer.jetblue.com, developers.jetblue.com,
+    docs.jetblue.com, apis.jetblue.com, ndc.jetblue.com, ndcapi.jetblue.com
+    and partners.jetblue.com do not resolve in DNS. api.jetblue.com resolves
+    (Fastly-fronted) but returns HTTP 404 with a JSON body at /, /v1, /docs,
+    /ndc, /openapi.json, /swagger.json and /.well-known/openapi.json — it is
+    an internal edge host for the jetblue.com web and mobile clients, not a
+    published API product. /developers, /api, /docs, /openapi.json,
+    /swagger.json, /api-docs, /.well-known/ and /llms.txt on www.jetblue.com
+    all return 404. The published SEO sitemap enumerates 361 URLs and contains
+    no developer, API, sandbox or portal page.
+
+    The two airline surfaces are cleanly separated and neither is a public API.
+
+    CONSUMER SURFACE: flight status, booking, check-in and the TrueBlue
+    loyalty program are delivered only through jetblue.com and the JetBlue
+    mobile app. The site is an Angular client rendered against an undocumented
+    Magnolia CMS content-delivery layer at
+    /magnoliapublic/.rest/jetblue/v4/... . Those endpoints answer 200 and were
+    used here only to read page copy that the JS-rendered HTML hides; they are
+    CMS plumbing, are not documented, are not versioned for third parties, and
+    are explicitly NOT treated as a JetBlue API in this profile. The website
+    terms forbid programmatic access outright (section 9.1.5).
+
+    DISTRIBUTION SURFACE: this is where JetBlue actually transacts with third
+    parties, and it is entirely gated. jetblue.com/travel-agents (HTTP 200)
+    carries the agency policy set — booking, ticketing, schedule change,
+    IROP/waiver codes, name changes, EMDs, seat assignments, chargebacks,
+    debit memos, government fares and ticketing authority. Every one of those
+    workflows is described as happening "in your GDS." JetBlue files $0 infant
+    fares in the GDS, sells first/second checked bags, priority security and
+    seat assignments as GDS EMDs (explicitly "not available in Apollo and
+    Worldspan"), does not support group bookings through the GDS at all, and
+    settles through ARC in the U.S. and IATA BSPs internationally.
+
+    NDC: jetblue.com/travel-agents/ndc (HTTP 200) is a real, current NDC
+    program page. It states most agencies connect to JetBlue NDC via "GDS /
+    NDC aggregators", corporate booking tools and online booking platforms,
+    and that JetBlue "also supports direct integrations for TMCs and
+    technology partners with development capabilities" through a four-step
+    process: business use case submission, onboarding, certification testing,
+    go-live deployment. It says JetBlue provides "NDC API documentation,
+    Schema and message samples, Certification and testing guidelines, Release
+    notes and updates" — all of it partner-only; none of it is published. No
+    NDC schema version, no IATA NDC certification level, no NDC endpoint
+    hostname, and no GDS/EDIFACT surcharge is stated anywhere on the public
+    site. The only public entry points are two mailboxes: ndcsales@jetblue.com
+    (commercial) and ndcsupport@jetblue.com (technical). There is therefore no
+    artifact to harvest: apis[] is empty and openapi/ was not created.
+  posture:
+    firstPartyDeveloperPortal: false
+    developerPortalUrl: ''
+    selfServeSignup: false
+    downloadableOpenAPI: false
+    downloadableNDCSchema: false
+    publicNDCEndpoint: false
+    consumerAPIPublished: false
+    distributionAPIPublished: false
+    ndcProgramPagePublished: true
+    ndcProgramPageUrl: https://www.jetblue.com/travel-agents/ndc
+    authModel: none-documented
+    specProvenance: none
+    githubOrganization: none-found
+  transports:
+  - protocol: REST
+    scheme: https
+    documented: false
+    note: >-
+      No public REST API is documented. api.jetblue.com resolves but 404s at
+      every probed path. The Magnolia CMS content-delivery paths under
+      /magnoliapublic/.rest/ are undocumented internal plumbing for the
+      jetblue.com web client and are not counted as a published API.
+  - protocol: NDC (IATA XML)
+    scheme: https
+    documented: false
+    note: >-
+      JetBlue states it operates an NDC program and supplies NDC API
+      documentation and message schemas to onboarded partners. No endpoint,
+      version or schema is published publicly.
+  - protocol: EDIFACT / GDS
+    scheme: n/a
+    documented: false
+    note: >-
+      Legacy GDS distribution is evidenced throughout the agency policy pages
+      (fare filing, EMDs, SSR codes, ARC/BSP settlement) but no technical
+      contract is published by JetBlue; the contract belongs to the GDS.
+switchingCost:
+  interfaceShape:
+    value: standard-plus-proprietary
+    standardNamed: IATA New Distribution Capability (NDC)
+    standardVersion: not-published
+    evidence: >-
+      jetblue.com/travel-agents/ndc names IATA NDC as the interface and
+      promises "Schema and message samples" to partners, so the base message
+      contract is an open industry standard that Sabre, Amadeus, Travelport
+      and the NDC aggregators also implement. But the standard is wrapped in a
+      JetBlue-specific layer that binds the seller and is NOT part of NDC:
+      mandatory JetBlue certification testing before go-live, JetBlue waiver
+      codes for schedule changes and IROPs, JetBlue-specific EMD servicing
+      rules ("EMDs are not interlineable, endorsable, or exchangeable"),
+      JetBlue booking-policy enforcement backed by debit memos, and a JetBlue
+      ticketing-authority grant that can be revoked. No NDC version number and
+      no IATA certification level are published, so the degree of divergence
+      from stock NDC schemas cannot be verified from public sources.
+    caveat: >-
+      Downgraded from open-standard because nothing is published; upgraded
+      from proprietary-undocumented because the standard is explicitly named.
+  secondSource:
+    value: no-alternative
+    evidence: >-
+      For JetBlue seat inventory there is no second source. Only JetBlue sells
+      JetBlue seats; a seller that loses ticketing authority loses the
+      content, not just a connection.
+    alternativesConsidered:
+    - name: Other U.S. carriers (Delta, United, American, Southwest, Spirit, Alaska)
+      verdict: >-
+        Substitutable travel on overlapping routes, NOT substitutable
+        inventory. Cannot fulfil a JetBlue booking.
+    - name: JetBlue interline and codeshare partners
+      verdict: >-
+        jetblue.com/airline-partners lists interline/codeshare carriers
+        (Icelandair, Qatar Airways, Singapore Airlines, Etihad, Condor, China
+        Airlines, South African Airways, Cape Air, Brightline rail). These
+        extend JetBlue itineraries; they do not resell JetBlue-only inventory
+        independently.
+    - name: The GDS channel itself (Sabre / Amadeus / Travelport)
+      verdict: >-
+        Here alternatives DO exist. A seller can reach JetBlue content through
+        more than one GDS or NDC aggregator, so the channel is
+        alternatives-with-migration. The channel is replaceable; the inventory
+        behind it is not. Note the negative evidence too: EMDs are explicitly
+        "not available in Apollo and Worldspan", so channel choice materially
+        changes what an agency can sell.
+  exitPath:
+    value: export-on-request
+    operationCited: none
+    evidence: >-
+      No export, dump, bulk or data-portability operation is published,
+      because no API is published. The privacy policy (jetblue.com/legal/privacy,
+      HTTP 200) provides a manual right-to-know and right-to-delete: "If at
+      any point in time you wish know what data we process about you, you can
+      request to access the information by contacting privacy@jetblue.com",
+      and asks the requester to supply a confirmation number or record locator
+      number, TrueBlue account number and travel dates, plus a photocopy of a
+      passport or driver's licence for identity verification. It also warns
+      that using JetBlue services after closing an account restarts
+      collection. For agencies, debit-memo correspondence and payment history
+      live in ARC Memo Manager — a third-party ARC system, not a JetBlue
+      export. There is no machine-readable exit.
+  identifierPortability:
+    value: >-
+      Predominantly shared industry identifiers, with a proprietary loyalty
+      key and vendor-controlled authority grants.
+    portableIdentifiersFound:
+    - IATA airline designator B6 (JetBlue)
+    - IATA three-letter airport codes throughout the route and policy pages
+    - PNR record locator / confirmation number (named in the privacy policy as the identity key for a data request)
+    - Electronic ticket numbers and EMD (Electronic Miscellaneous Document) numbers
+    - ARC accreditation number and Agent Reporting Agreement standing (U.S.)
+    - IATA agency numeric code plus local BSP participation (international)
+    - IATA SSR codes used verbatim in JetBlue PNR requirements — PCTC (emergency contact) and INFT (infant)
+    - ATPCO-style fare basis codes, booking classes and CAT 5 advance-purchase rules
+    - ARC ADM (agency debit memo) identifiers, handled in ARC Memo Manager
+    proprietaryIdentifiersFound:
+    - TrueBlue loyalty account number (JetBlue-only; required in the PNR to avoid duplicate-booking cancellation)
+    - JetBlue-issued waiver codes for schedule change and IROP rebooking
+    - JetBlue ticketing authority / "ticketing plate" grant, revocable at JetBlue's discretion
+    note: >-
+      The record keys travel well — a PNR, an e-ticket number and an IATA
+      code mean the same thing in any GDS. What does not travel is the
+      *authority*: the plate and the waiver codes are JetBlue-granted and
+      JetBlue-revoked, and the loyalty relationship is entirely proprietary.
+  contractualLockIn:
+    published: partial
+    verbatim:
+    - source: https://www.jetblue.com/travel-agents/ticketing-authority
+      quote: >-
+        "To become an authorized agent to sell JetBlue tickets, a U.S. travel
+        agency must be fully accredited with the Airlines Reporting
+        Corporation (ARC). All ARC accredited agencies are automatically
+        granted authority to validate on JetBlue stock except for Online
+        Travel Agencies (OTAs). International Agents must be accredited with
+        IATA and participate in the local Bank Settlement Plan (BSP)."
+    - source: https://www.jetblue.com/travel-agents/ticketing-authority
+      quote: >-
+        "JetBlue will grant ticketing authority as we deem appropriate, and
+        has the authority to remove it should an agency not comply with all
+        JetBlue policies and procedures."
+    - source: https://www.jetblue.com/travel-agents/ticketing-authority
+      quote: >-
+        "We only work with a few Online Travel Agencies (OTAs) and we are not
+        accepting new applications at this time. Please do not give your
+        inventory or plating access to an OTA, or you will lose your ticketing
+        plate and access to inventory."
+      note: >-
+        This is the sharpest switching-cost clause on the public site: a
+        published channel-exclusivity restriction whose stated penalty is
+        total loss of access to JetBlue inventory.
+    - source: https://www.jetblue.com/travel-agents/ticketing-authority
+      quote: >-
+        "It may be necessary for JetBlue to initiate collection proceedings
+        against an agency for failure to meet and/or violation of JetBlue
+        guidelines, or failure to remit payment. JetBlue can file a default
+        claim with the Airlines Reporting Corporation against the agency's
+        Surety Bond or Letter of Credit for the amount due."
+    - source: https://www.jetblue.com/travel-agents/debit-memo
+      quote: >-
+        "Each debit memo issued by JetBlue Airways is subject to a $50 Service
+        Charge. Debit memos that are not paid within 90 days of issuance will
+        be reactivated and a $100 late fee will be applied. After 180 days, an
+        additional $100 late fee will be applied and the debit memo will be
+        sent to collections. Service Charges and penalties are non-negotiable
+        and will not be waived... Debit memos (ADMs) with tickets that are
+        more than 365 days old cannot be disputed nor investigated, and will
+        be due and payable in full. JetBlue does not accept 'Exception
+        Transaction Forms' for any reason."
+    - source: https://www.jetblue.com/travel-agents/booking-policies
+      quote: >-
+        "In the event of a duplicate booking... We will waive the change/cancel
+        penalty fee required by our fare rules; however a $50 Service Charge
+        debit memo will be issued to the travel agency for administrative
+        costs."
+    - source: https://www.jetblue.com/travel-agents/emd
+      quote: >-
+        "EMDs are not interlineable, endorsable, or exchangeable."
+    - source: https://www.jetblue.com/legal/website-terms
+      quote: >-
+        "You may not access, copy, acquire, or monitor any Content by using
+        any manual process, or any 'robot,' 'spider,' 'deep-link,'
+        'page-scrape,' or any other automatic device, program, algorithm or
+        methodology without first obtaining the prior written consent of
+        JetBlue."
+      note: >-
+        Programmatic access to the consumer surface is contractually
+        prohibited absent prior written consent, which closes the only
+        remaining unofficial route.
+    notPublished:
+    - Minimum term or commitment length for an NDC or agency agreement
+    - Termination notice period
+    - Full-content agreement terms
+    - Per-segment or per-booking distribution fees
+    - GDS/EDIFACT surcharge or NDC price differential
+    - The NDC partner agreement itself, or any NDC pricing
+    note: >-
+      No commercial terms beyond the above were inferred. JetBlue's NDC
+      commercial terms are handled off-site via ndcsales@jetblue.com and are
+      not verifiable from public sources.
+  distributionModel:
+    value: gds-intermediated
+    evidence: >-
+      Every agency workflow JetBlue documents is a GDS workflow: fares and $0
+      infant fares filed in the GDS, bags/priority security/seat assignments
+      sold as GDS EMDs, SSR codes entered in the PNR, "please contact your CRS
+      help desk", "JetBlue does not support group bookings through the GDS",
+      settlement through ARC (U.S.) and IATA BSP (international), and
+      enforcement through ARC debit memos. NDC is layered on top of, not in
+      place of, that channel — the NDC page itself says most agencies connect
+      "via GDS / NDC aggregators."
+    secondaryChannels:
+    - direct-only (jetblue.com, JetBlue app, TrueBlue)
+    - ndc-direct (TMCs and technology partners, after certification)
+    - aggregator-reseller (NDC aggregators, corporate booking tools, online booking platforms)
+  ndcPosture:
+    programPublished: true
+    programUrl: https://www.jetblue.com/travel-agents/ndc
+    iataCertificationLevelClaimed: none-published
+    ndcSchemaVersionPublished: false
+    publicNDCEndpoint: false
+    publicNDCSpecification: false
+    gdsSurchargePublished: false
+    partnerOnlyArtifactsClaimed:
+    - NDC API documentation
+    - Schema and message samples
+    - Certification and testing guidelines
+    - Release notes and updates
+    onboardingSteps:
+    - Business use case submission
+    - Onboarding
+    - Certification testing
+    - Go-live deployment
+    contacts:
+      commercial: ndcsales@jetblue.com
+      technical: ndcsupport@jetblue.com
+    summary: >-
+      JetBlue runs a live NDC program and says it supports direct API
+      integration for TMCs and technology partners, but publishes no NDC
+      version, no IATA certification level, no endpoint and no schema — the
+      documentation exists behind a use-case submission and certification
+      gate. No GDS surcharge or NDC incentive is disclosed publicly.
+  accessGate:
+    value: accredited-or-licensed
+    whatADeveloperMustDo: >-
+      To ticket JetBlue at all, a U.S. agency must hold full ARC accreditation
+      (which carries an Agent Reporting Agreement and a surety bond or letter
+      of credit that JetBlue can claim against); an international agency must
+      hold IATA accreditation and participate in the local BSP, then email
+      JetBlue with subject "Request for Ticketing Authority" and its BSP
+      country, agency name and IATA number
+      (agencysettlementsupport@jetblue.com, agentedeviaje@jetblue.com for
+      Spanish, support@flyjetblue.eu for European BSPs). JetBlue grants
+      authority "as we deem appropriate." OTAs are effectively closed — "we
+      are not accepting new applications at this time." To obtain the NDC API
+      on top of that, a TMC or technology partner must submit a business use
+      case, complete JetBlue onboarding, pass JetBlue certification testing
+      and then go live, via ndcsales@ / ndcsupport@jetblue.com. There is no
+      self-serve signup, no sandbox, no API key and no published agreement
+      anywhere in the flow.
+    excludedBSPs:
+    - Kuwait (KW)
+    - South Africa (ZA)
+    - United Arab Emirates (AE)
+    acceptedEuropeanBSPs:
+    - BE/LU
+    - DK
+    - FR
+    - DE
+    - IE
+    - IT
+    - PT
+    - ES
+    - CH
+    - GB
+    - NL
+  costToLeave:
+    summary: >-
+      An agency leaving JetBlue does not migrate — it loses the product.
+      There is no alternative supplier of JetBlue inventory, so exit means
+      dropping JetBlue routes from the shelf. Switching CHANNEL (one GDS or
+      NDC aggregator to another) is a real project but is possible, with the
+      caveat that EMD ancillaries are unavailable in Apollo and Worldspan, so
+      channel choice changes what can be sold. Leaving is also not clean:
+      open ADMs remain due and payable, unpaid memos escalate to $100 late
+      fees at 90 and 180 days and then to collections, memos on tickets over
+      365 days old cannot be disputed at all, JetBlue can file a default claim
+      against the agency's ARC surety bond, and there is no bulk export of the
+      agency's or the traveller's data from JetBlue — only a manual
+      privacy@jetblue.com request. The identifiers survive (PNR, e-ticket,
+      IATA codes); the authority and the loyalty relationship do not.
+probes:
+- url: https://www.jetblue.com/
+  status: 200
+  note: Live consumer site (Angular SPA over Magnolia CMS). No developer or API section.
+- url: https://developer.jetblue.com/
+  status: 000
+  note: DNS does not resolve.
+- url: https://developers.jetblue.com/
+  status: 000
+  note: DNS does not resolve.
+- url: https://docs.jetblue.com/
+  status: 000
+  note: DNS does not resolve.
+- url: https://apis.jetblue.com/
+  status: 000
+  note: DNS does not resolve.
+- url: https://ndc.jetblue.com/
+  status: 000
+  note: DNS does not resolve.
+- url: https://ndcapi.jetblue.com/
+  status: 000
+  note: DNS does not resolve.
+- url: https://partners.jetblue.com/
+  status: 000
+  note: DNS does not resolve.
+- url: https://api.jetblue.com/
+  status: 404
+  note: >-
+    Host resolves behind Fastly and returns application/json 404 at the root.
+    Internal edge host for jetblue.com clients; no published API product.
+- url: https://api.jetblue.com/v1
+  status: 404
+- url: https://api.jetblue.com/ndc
+  status: 404
+- url: https://api.jetblue.com/docs
+  status: 404
+- url: https://api.jetblue.com/openapi.json
+  status: 404
+- url: https://api.jetblue.com/swagger.json
+  status: 404
+- url: https://api.jetblue.com/.well-known/openapi.json
+  status: 404
+- url: https://api.jetblue.com/.well-known/security.txt
+  status: 404
+- url: https://www.jetblue.com/developers
+  status: 404
+- url: https://www.jetblue.com/api
+  status: 404
+- url: https://www.jetblue.com/docs
+  status: 404
+- url: https://www.jetblue.com/openapi.json
+  status: 404
+- url: https://www.jetblue.com/swagger.json
+  status: 404
+- url: https://www.jetblue.com/api-docs
+  status: 404
+- url: https://www.jetblue.com/.well-known/
+  status: 404
+- url: https://www.jetblue.com/.well-known/security.txt
+  status: 404
+- url: https://www.jetblue.com/.well-known/openapi.json
+  status: 404
+- url: https://www.jetblue.com/.well-known/ai-plugin.json
+  status: 404
+- url: https://www.jetblue.com/llms.txt
+  status: 404
+- url: https://www.jetblue.com/robots.txt
+  status: 200
+  note: >-
+    Allows /, disallows three booking paths, and advertises the Magnolia SEO
+    sitemap plus globalsiteseo.com mirrors. No API references.
+- url: https://www.jetblue.com/magnoliapublic/.rest/sitemap/v1/seo/home/sitemap.xml
+  status: 200
+  note: 361 <loc> entries. No developer, API, sandbox or portal URL anywhere.
+- url: https://www.jetblue.com/travel-agents
+  status: 200
+  note: Agency policy hub — the only third-party distribution surface published.
+- url: https://www.jetblue.com/travel-agents/ndc
+  status: 200
+  note: >-
+    NDC program page. Names GDS/NDC aggregators, corporate booking tools and
+    online booking platforms; describes direct API connectivity for TMCs and
+    technology partners via use-case submission, onboarding, certification
+    testing and go-live; lists partner-only NDC API documentation, schema and
+    message samples, certification guidelines and release notes; gives
+    ndcsales@jetblue.com and ndcsupport@jetblue.com. No version, no level, no
+    endpoint, no spec.
+- url: https://www.jetblue.com/travel-agents/ticketing-authority
+  status: 200
+  note: ARC / IATA + BSP accreditation gate, OTA restriction, surety-bond default claim.
+- url: https://www.jetblue.com/travel-agents/booking-policies
+  status: 200
+  note: GDS booking rules, duplicate-booking cancellation, churning, PCTC/SSR requirements, $50 service-charge debit memo.
+- url: https://www.jetblue.com/travel-agents/ticketing-policies
+  status: 200
+  note: Bulk-fare non-refundability, infant ticketing, GDS fare filing, ARC Industry Agent Handbook references.
+- url: https://www.jetblue.com/travel-agents/debit-memo
+  status: 200
+  note: ADM reasons and escalating non-negotiable fee schedule; ARC Memo Manager is the system of record.
+- url: https://www.jetblue.com/travel-agents/emd
+  status: 200
+  note: GDS EMD ancillaries; "not available in Apollo and Worldspan"; EMDs not interlineable/endorsable/exchangeable.
+- url: https://www.jetblue.com/travel-agents/chargeback-policy
+  status: 200
+  note: ARC Credit Card Acceptance and Chargeback Management Procedures; agency bears card-present fraud liability.
+- url: https://www.jetblue.com/travel-agents/contact-info
+  status: 200
+- url: https://www.jetblue.com/legal
+  status: 200
+- url: https://www.jetblue.com/legal/privacy
+  status: 200
+  note: Right to know / delete via privacy@jetblue.com; no bulk export; identity keyed on record locator and TrueBlue number.
+- url: https://www.jetblue.com/legal/website-terms
+  status: 200
+  note: Section 9.1.5 prohibits robot/spider/page-scrape access without prior written consent; 9.2 prohibits commercial use.
+- url: https://www.jetblue.com/legal/vulnerability-disclosure-policy
+  status: 200
+- url: https://legacycms.jetblue.com/public/dam/ui-assets/p/contract_of_carriage.pdf
+  status: 200
+- url: https://trueblue.jetblue.com/web/trueblue/terms-and-conditions
+  status: 200
+- url: https://www.jetblue.com/our-company
+  status: 200
+- url: https://www.jetblue.com/our-company/business-partners
+  status: 200
+  note: Procurement via Ariba Supplier Network and a Business Partner Code of Conduct. Not a developer or API channel.
+- url: https://www.jetblue.com/airline-partners
+  status: 200
+  note: Interline and codeshare partners, including Brightline rail.
+- url: https://www.jetblue.com/contact-us
+  status: 200
+- url: https://ir.jetblue.com/
+  status: 403
+  note: Investor relations host blocks non-browser clients; not used as a source.
+- url: https://news.jetblue.com/
+  status: 403
+  note: Newsroom host blocks non-browser clients; not used as a source.
+- url: https://api.github.com/orgs/jetblue
+  status: 404
+  note: No JetBlue GitHub organization. github.com/jetblue is an unrelated personal account.
+- url: https://www.jetblue.com/magnoliapublic/.rest/jetblue/v4/page/home/travel-agents/ndc
+  status: 200
+  note: >-
+    Undocumented Magnolia CMS content-delivery endpoint. Used ONLY to read the
+    copy of the JS-rendered NDC page. Deliberately not recorded as a JetBlue
+    API in apis.yml.
+sources:
+- url: https://www.jetblue.com/travel-agents/ndc
+  type: Documentation
+  note: JetBlue NDC program page — the single most load-bearing source in this profile.
+- url: https://www.jetblue.com/travel-agents/ticketing-authority
+  type: Onboarding
+  note: ARC/IATA accreditation gate and the OTA plating-access restriction.
+- url: https://www.jetblue.com/travel-agents/debit-memo
+  type: Policies
+  note: Non-negotiable ADM fee schedule and escalation to collections.
+- url: https://www.jetblue.com/travel-agents/emd
+  type: Policies
+  note: GDS EMD ancillary distribution and channel gaps (Apollo, Worldspan).
+- url: https://www.jetblue.com/legal/website-terms
+  type: TermsOfService
+  note: Prohibition on automated access to the consumer surface.
+- url: https://www.jetblue.com/legal/privacy
+  type: PrivacyPolicy
+  note: Manual right-to-know/delete; no machine-readable data portability.
+- url: https://www.jetblue.com/magnoliapublic/.rest/sitemap/v1/seo/home/sitemap.xml
+  type: Reference
+  note: 361-URL public sitemap; negative evidence that no developer surface exists.
+actions:
+  apisYmlApis: []
+  openapiHarvested: []
+  reason: |
+    No public API, no developer portal, and no downloadable OpenAPI, AsyncAPI
+    or NDC schema were found for JetBlue. The NDC contract exists but is
+    supplied only to partners who have submitted a business use case and
+    passed JetBlue certification testing, and the ticketing channel behind it
+    requires ARC or IATA/BSP accreditation. apis[] is intentionally empty and
+    openapi/ was not created. This is an honest identity-only (built-stub)
+    profile of a fully gated, GDS-intermediated airline with a live but
+    unpublished NDC program.
+notes:
+  duplicateCandidate:
+    slug: jetblue-airways
+    note: >-
+      The APIs.io catalog already carries a thin record at slug
+      "jetblue-airways" (created 2026-03-21, 0 APIs, composite 4.9, band
+      minimal). This richer "jetblue" record should be reconciled against it
+      under the duplicate-provider-retirement process — survivor plus
+      retired.yml tombstone — rather than left as a parallel listing.
+  imageAsset: >-
+    apis.yml uses the shared apis-json placeholder logo. No jetblue.png exists
+    yet at kinlane-images.s3.amazonaws.com/shared/apis-json/icons/ (HTTP 403);
+    the provider-icons backfill should replace it.
