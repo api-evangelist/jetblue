@@ -495,6 +495,50 @@ probes:
     Undocumented Magnolia CMS content-delivery endpoint. Used ONLY to read the
     copy of the JS-rendered NDC page. Deliberately not recorded as a JetBlue
     API in apis.yml.
+- url: https://accounts.jetblue.com/.well-known/openid-configuration
+  status: 200
+  note: >-
+    Enrichment round 2026-07-28. Live OpenID Connect discovery document for
+    JetBlue's Okta-hosted consumer identity provider (issuer
+    https://accounts.jetblue.com). The ONLY machine-readable API contract
+    JetBlue serves anonymously. Harvested to
+    well-known/jetblue-openid-configuration.json and read into
+    authentication/, scopes/ and conformance/. It is the consumer sign-in /
+    TrueBlue backend, not a partner or NDC API, and there is no published
+    third-party client-onboarding path — so apis[] remains empty.
+- url: https://accounts.jetblue.com/.well-known/oauth-authorization-server
+  status: 200
+  note: RFC 8414 authorization server metadata. Harvested verbatim.
+- url: https://accounts.jetblue.com/.well-known/oauth-protected-resource
+  status: 405
+- url: https://accounts.jetblue.com/.well-known/security.txt
+  status: 405
+- url: https://accounts.jetblue.com/openapi.json
+  status: 404
+- url: https://checkin.jetblue.com/openapi.json
+  status: 200
+  note: SPA catch-all returning HTML, not an OpenAPI document. Not a spec.
+- url: https://azrest.jetblue.com/
+  status: 404
+- url: https://experience.jetblue.com/
+  status: 403
+- url: https://movil.jetblue.com/
+  status: 301
+- url: https://mobile.jetblue.com/
+  status: 000
+- url: https://magnolia.jetblue.com/
+  status: 000
+- url: https://hackerone.com/jetblue
+  status: 200
+  note: >-
+    "JetBlue - Vulnerability Disclosure Program | HackerOne". Confirms the
+    disclosure channel named in the JetBlue Vulnerability Disclosure Policy.
+- url: https://jetblue.statuspage.io/
+  status: 302
+  note: Redirects to /inactive — no JetBlue status page exists. status.jetblue.com does not resolve.
+- url: https://registry.npmjs.org/-/v1/search?text=jetblue
+  status: 200
+  note: No first-party JetBlue package. Only third-party wrappers and a community Playwright-based MCP server.
 sources:
 - url: https://www.jetblue.com/travel-agents/ndc
   type: Documentation

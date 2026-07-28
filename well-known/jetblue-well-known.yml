@@ -1,0 +1,106 @@
+generated: '2026-07-28'
+method: searched
+source: live probes of every JetBlue host named in apis.yml and in the JetBlue Vulnerability Disclosure Policy scope
+note: >-
+  The only /.well-known/ documents JetBlue serves anonymously are the OpenID
+  Connect discovery document and the RFC 8414 OAuth 2.0 authorization server
+  metadata on accounts.jetblue.com — the Okta-hosted identity provider behind
+  jetblue.com sign-in and the TrueBlue account. They are real, fetched
+  verbatim, and are the only machine-readable API contract JetBlue publishes.
+  They describe the consumer identity surface, NOT a partner or NDC API:
+  JetBlue publishes no developer portal, no API reference and no OpenAPI. No
+  security.txt is served on any host, even though JetBlue runs a HackerOne
+  vulnerability disclosure program.
+hosts:
+- host: https://accounts.jetblue.com
+  role: identity provider (Okta-hosted) for jetblue.com sign-in / TrueBlue
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 200
+    file: jetblue-openid-configuration.json
+    spec: OpenID Connect Discovery 1.0
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: jetblue-oauth-authorization-server.json
+    spec: RFC 8414 OAuth 2.0 Authorization Server Metadata
+  - path: /.well-known/oauth-protected-resource
+    status: 405
+  - path: /.well-known/security.txt
+    status: 405
+  - path: /.well-known/api-catalog
+    status: 405
+  - path: /.well-known/webfinger
+    status: 400
+  - path: /openapi.json
+    status: 404
+  - path: /swagger.json
+    status: 404
+- host: https://www.jetblue.com
+  role: consumer site (Angular SPA over Magnolia CMS)
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /llms.txt
+    status: 404
+- host: https://api.jetblue.com
+  role: internal edge host (Fastly) for the jetblue.com web and mobile clients
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /openapi.json
+    status: 404
+  - path: /openapi.yaml
+    status: 404
+  - path: /swagger.json
+    status: 404
+  - path: /api-docs
+    status: 404
+  - path: /graphql
+    status: 404
+- host: https://checkin.jetblue.com
+  role: check-in SPA — returns an HTML shell (HTTP 200) for every path, including /openapi.json; no spec
+  documents:
+  - path: /openapi.json
+    status: 200
+    content_type: text/html
+    note: SPA catch-all HTML, not an OpenAPI document
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/html
+    note: SPA catch-all HTML, not RFC 9116 text
+- host: https://azrest.jetblue.com
+  role: in VDP scope; 404 at every probed path
+  documents:
+  - path: /
+    status: 404
+  - path: /openapi.json
+    status: 404
+  - path: /.well-known/security.txt
+    status: 404
+unreachable_hosts:
+- host: mobile.jetblue.com
+  status: '000'
+  note: DNS/connection failure
+- host: magnolia.jetblue.com
+  status: '000'
+  note: DNS/connection failure
+- host: experience.jetblue.com
+  status: 403
+- host: movil.jetblue.com
+  status: 503

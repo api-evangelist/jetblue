@@ -21,7 +21,31 @@ The two airline surfaces must not be conflated:
 
 Selling JetBlue requires full **ARC accreditation** in the U.S., or **IATA accreditation plus local BSP participation** internationally followed by an emailed ticketing-authority request. JetBlue grants authority "as we deem appropriate" and can remove it. OTAs are effectively closed: "We only work with a few Online Travel Agencies (OTAs) and we are not accepting new applications at this time. Please do not give your inventory or plating access to an OTA, or you will lose your ticketing plate and access to inventory."
 
-This is an honest identity-only record. There is no public API to harvest. See [review.yml](review.yml) for the full switching-cost analysis and every probed URL with its HTTP status.
+### The one machine-readable contract
+
+The 2026-07-28 enrichment round found exactly one document JetBlue serves anonymously and machine-readably: the **OpenID Connect discovery** document (and its RFC 8414 sibling) at [accounts.jetblue.com/.well-known/openid-configuration](https://accounts.jetblue.com/.well-known/openid-configuration) — the Okta-hosted identity provider behind jetblue.com sign-in and the TrueBlue account. It advertises authorization_code, implicit, refresh_token, password, device_code and CIBA grants, PKCE (S256), DPoP, PAR, introspection and revocation. It is the **consumer identity backend for JetBlue's own clients**, not a partner or NDC API, and no third-party client-onboarding path is published — so `apis[]` stays empty. The document is harvested verbatim to `well-known/` and read into `authentication/`, `scopes/` and `conformance/`.
+
+JetBlue also runs a **[Vulnerability Disclosure Program on HackerOne](https://hackerone.com/jetblue)** under a published [policy](https://www.jetblue.com/legal/vulnerability-disclosure-policy) with safe harbor and coordinated disclosure — but serves no `/.well-known/security.txt` on any host, so the program is not machine-discoverable.
+
+There is no status page (`jetblue.statuspage.io` redirects to `/inactive`, `status.jetblue.com` does not resolve), no JetBlue GitHub organization, and no first-party SDK in any package registry.
+
+## Artifacts
+
+| Artifact | File |
+|---|---|
+| Well-known probe index | [well-known/jetblue-well-known.yml](well-known/jetblue-well-known.yml) |
+| OIDC discovery (verbatim) | [well-known/jetblue-openid-configuration.json](well-known/jetblue-openid-configuration.json) |
+| OAuth AS metadata (verbatim) | [well-known/jetblue-oauth-authorization-server.json](well-known/jetblue-oauth-authorization-server.json) |
+| Authentication profile | [authentication/jetblue-authentication.yml](authentication/jetblue-authentication.yml) |
+| OAuth scopes | [scopes/jetblue-scopes.yml](scopes/jetblue-scopes.yml) |
+| Standards conformance | [conformance/jetblue-conformance.yml](conformance/jetblue-conformance.yml) |
+| Vulnerability disclosure | [security/jetblue-vulnerability-disclosure.yml](security/jetblue-vulnerability-disclosure.yml) |
+| Domain security | [security/jetblue-domain-security.yml](security/jetblue-domain-security.yml) |
+| Packages / SDK survey | [packages/jetblue-packages.yml](packages/jetblue-packages.yml) |
+| MCP survey | [mcp/jetblue-mcp.yml](mcp/jetblue-mcp.yml) |
+| llms.txt | [llms/jetblue-llms.txt](llms/jetblue-llms.txt) |
+
+This remains an honest, near-identity-only record: there is no public JetBlue API to harvest. See [review.yml](review.yml) for the full switching-cost analysis and every probed URL with its HTTP status.
 
 ## Tags
 

@@ -42,6 +42,34 @@ modified: '2026-07-28'
 specificationVersion: '0.19'
 apis: []
 common:
+- type: DomainSecurity
+  url: security/jetblue-domain-security.yml
+- type: WellKnown
+  name: JetBlue /.well-known probe index
+  url: well-known/jetblue-well-known.yml
+- type: Authentication
+  name: JetBlue authentication profile (accounts.jetblue.com OIDC)
+  url: authentication/jetblue-authentication.yml
+- type: OpenIDConnect
+  name: JetBlue Accounts OpenID Connect discovery
+  url: https://accounts.jetblue.com/.well-known/openid-configuration
+- type: OAuthScopes
+  name: JetBlue Accounts OAuth scopes
+  url: scopes/jetblue-scopes.yml
+- type: Conformance
+  name: JetBlue standards conformance
+  url: conformance/jetblue-conformance.yml
+- type: Security
+  url: https://www.jetblue.com/legal/vulnerability-disclosure-policy
+- type: VulnerabilityDisclosure
+  name: JetBlue vulnerability disclosure profile
+  url: security/jetblue-vulnerability-disclosure.yml
+- type: LLMsTxt
+  name: JetBlue llms.txt
+  url: llms/jetblue-llms.txt
+- type: Packages
+  name: JetBlue package registry survey (no first-party SDKs)
+  url: packages/jetblue-packages.yml
 - type: Website
   url: https://www.jetblue.com/
 - type: About

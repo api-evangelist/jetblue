@@ -1,0 +1,120 @@
+generated: '2026-07-28'
+method: searched
+source: https://accounts.jetblue.com/.well-known/openid-configuration
+also_source: https://accounts.jetblue.com/.well-known/oauth-authorization-server
+docs: null
+scope_note: >-
+  JetBlue publishes no developer-facing authentication documentation. This
+  profile is read verbatim from the anonymous OpenID Connect / RFC 8414
+  discovery documents served by accounts.jetblue.com, the Okta-hosted identity
+  provider behind jetblue.com sign-in and the TrueBlue loyalty account. It
+  describes the CONSUMER identity surface used by JetBlue's own web and mobile
+  clients. It is not an authentication contract for third-party developers:
+  there is no published client-registration path for outside parties, and the
+  distribution (NDC / GDS) channel is gated behind ARC or IATA accreditation
+  plus JetBlue certification, with its auth model unpublished.
+summary:
+  types:
+  - openIdConnect
+  - oauth2
+  oauth2_flows:
+  - authorizationCode
+  - implicit
+  - password
+  - clientCredentials
+  - deviceCode
+  - ciba
+  - refreshToken
+  api_key_in: []
+  pkce: true
+  pkce_methods:
+  - S256
+  dpop: true
+  par: true
+  mtls: false
+schemes:
+- name: JetBlueAccountsOIDC
+  type: openIdConnect
+  openIdConnectUrl: https://accounts.jetblue.com/.well-known/openid-configuration
+  issuer: https://accounts.jetblue.com
+  vendor: Okta
+  endpoints:
+    authorization: https://accounts.jetblue.com/oauth2/v1/authorize
+    token: https://accounts.jetblue.com/oauth2/v1/token
+    userinfo: https://accounts.jetblue.com/oauth2/v1/userinfo
+    jwks: https://accounts.jetblue.com/oauth2/v1/keys
+    registration: https://accounts.jetblue.com/oauth2/v1/clients
+    introspection: https://accounts.jetblue.com/oauth2/v1/introspect
+    revocation: https://accounts.jetblue.com/oauth2/v1/revoke
+    end_session: https://accounts.jetblue.com/oauth2/v1/logout
+    device_authorization: https://accounts.jetblue.com/oauth2/v1/device/authorize
+    pushed_authorization_request: https://accounts.jetblue.com/oauth2/v1/par
+  grant_types_supported:
+  - authorization_code
+  - implicit
+  - refresh_token
+  - password
+  - urn:ietf:params:oauth:grant-type:device_code
+  - urn:openid:params:grant-type:ciba
+  - urn:okta:params:oauth:grant-type:otp
+  - urn:okta:params:oauth:grant-type:oob
+  - http://auth0.com/oauth/grant-type/mfa-otp
+  - http://auth0.com/oauth/grant-type/mfa-oob
+  response_types_supported:
+  - code
+  - id_token
+  - code id_token
+  - code token
+  - id_token token
+  - code id_token token
+  response_modes_supported:
+  - query
+  - fragment
+  - form_post
+  - okta_post_message
+  token_endpoint_auth_methods_supported:
+  - client_secret_basic
+  - client_secret_post
+  - client_secret_jwt
+  - private_key_jwt
+  - none
+  id_token_signing_alg_values_supported:
+  - RS256
+  id_token_encryption_alg_values_supported:
+  - RSA-OAEP-256
+  - RSA-OAEP-384
+  - RSA-OAEP-512
+  id_token_encryption_enc_values_supported:
+  - A256GCM
+  code_challenge_methods_supported:
+  - S256
+  dpop_signing_alg_values_supported:
+  - RS256
+  - RS384
+  - RS512
+  - ES256
+  - ES384
+  - ES512
+  subject_types_supported:
+  - public
+  request_parameter_supported: true
+  sources:
+  - well-known/jetblue-openid-configuration.json
+  - well-known/jetblue-oauth-authorization-server.json
+undocumented_surfaces:
+- surface: NDC (IATA XML) partner API
+  auth_model: not-published
+  note: >-
+    JetBlue states it supplies NDC API documentation and message schemas only
+    to partners that pass business-use-case submission, onboarding and
+    certification testing (https://www.jetblue.com/travel-agents/ndc). No auth
+    model, endpoint or credential type is published.
+- surface: GDS / EDIFACT distribution
+  auth_model: out-of-band
+  note: >-
+    Access is an ARC (U.S.) or IATA + local BSP (international) accreditation
+    plus a JetBlue-granted, revocable ticketing authority; the technical
+    contract belongs to the GDS, not JetBlue.
+- surface: api.jetblue.com
+  auth_model: not-published
+  note: Internal Fastly-fronted edge host for jetblue.com clients; 404 at every probed path.

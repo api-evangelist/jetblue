@@ -1,0 +1,110 @@
+generated: '2026-07-28'
+method: searched
+source: https://accounts.jetblue.com/.well-known/openid-configuration
+also_source: https://accounts.jetblue.com/.well-known/oauth-authorization-server
+docs: null
+note: >-
+  Scopes are read verbatim from the anonymous discovery documents of
+  accounts.jetblue.com (Okta). The OIDC discovery document advertises only the
+  standard OpenID Connect scope set; the RFC 8414 authorization-server
+  document additionally advertises the Okta org management scope namespace
+  (okta.*), which is Okta platform default surface for the org's own
+  administration API, not a JetBlue product scope. JetBlue publishes no scope
+  or permission reference of its own, and no JetBlue business scopes (booking,
+  flight status, TrueBlue, NDC) appear anywhere in the discovery documents.
+schemes:
+- name: JetBlueAccountsOIDC
+  issuer: https://accounts.jetblue.com
+  vendor: Okta
+  source: well-known/jetblue-openid-configuration.json
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://accounts.jetblue.com/oauth2/v1/authorize
+    tokenUrl: https://accounts.jetblue.com/oauth2/v1/token
+  - flow: implicit
+    authorizationUrl: https://accounts.jetblue.com/oauth2/v1/authorize
+  - flow: deviceCode
+    deviceAuthorizationUrl: https://accounts.jetblue.com/oauth2/v1/device/authorize
+    tokenUrl: https://accounts.jetblue.com/oauth2/v1/token
+scopes:
+- scope: openid
+  description: Request an OpenID Connect ID token for the signed-in JetBlue account.
+  category: oidc-standard
+  sources:
+  - well-known/jetblue-openid-configuration.json
+- scope: profile
+  description: Basic profile claims (name, preferred_username, locale, updated_at).
+  category: oidc-standard
+  sources:
+  - well-known/jetblue-openid-configuration.json
+- scope: email
+  description: Email address and email_verified claim.
+  category: oidc-standard
+  sources:
+  - well-known/jetblue-openid-configuration.json
+- scope: address
+  description: Postal address claim.
+  category: oidc-standard
+  sources:
+  - well-known/jetblue-openid-configuration.json
+- scope: phone
+  description: Phone number and phone_number_verified claims.
+  category: oidc-standard
+  sources:
+  - well-known/jetblue-openid-configuration.json
+- scope: offline_access
+  description: Issue a refresh token so the client can renew access without re-authentication.
+  category: oidc-standard
+  sources:
+  - well-known/jetblue-openid-configuration.json
+- scope: groups
+  description: Group memberships claim for the account.
+  category: okta-standard
+  sources:
+  - well-known/jetblue-openid-configuration.json
+okta_management_scopes:
+  note: >-
+    Advertised by the RFC 8414 authorization-server metadata as the Okta org
+    management API scope namespace. Recorded for completeness — these govern
+    Okta tenant administration, not JetBlue travel functionality, and are not
+    grantable to outside parties.
+  source: well-known/jetblue-oauth-authorization-server.json
+  namespaces:
+  - okta.users.*
+  - okta.groups.*
+  - okta.apps.*
+  - okta.clients.*
+  - okta.policies.*
+  - okta.idps.*
+  - okta.factors.*
+  - okta.sessions.*
+  - okta.logs.read
+  - okta.events.read
+  - okta.roles.*
+  - okta.orgs.*
+  - okta.domains.*
+  - okta.brands.*
+  - okta.schemas.*
+  - okta.templates.*
+  - okta.trustedOrigins.*
+  - okta.networkZones.*
+  - okta.behaviors.*
+  - okta.threatInsights.*
+  - okta.riskProviders.*
+  - okta.inlineHooks.*
+  - okta.eventHooks.*
+  - okta.linkedObjects.*
+  - okta.profileMappings.*
+  - okta.userTypes.*
+  - okta.appGrants.*
+  - okta.agentPools.*
+  - okta.reports.*
+  - okta.features.*
+  - okta.certificateAuthorities.*
+  - okta.principalRateLimits.*
+  - okta.rateLimits.*
+  - okta.directories.*
+  - okta.apiTokens.*
+  - okta.accessRequests.tasks.*
+  - okta.governance.assignmentCandidates.read
+  - okta.personal.adminSettings.*

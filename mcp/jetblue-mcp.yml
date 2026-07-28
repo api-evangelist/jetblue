@@ -1,0 +1,23 @@
+generated: '2026-07-28'
+method: searched
+status: none-published
+source: npm registry search, JetBlue site search, MCP registry search
+note: >-
+  JetBlue publishes no MCP server, and there is no OpenAPI to derive a
+  candidate tool list from — so no MCPServer pointer is wired in apis.yml. The
+  only MCP surface that exists is third-party and drives the consumer website
+  with headless browser automation, which jetblue.com's terms of use (section
+  9.1.5) prohibit without JetBlue's prior written consent. Recorded here so a
+  later round does not mistake it for a JetBlue-operated server.
+server: null
+tools: []
+third_party:
+- name: '@striderlabs/mcp-jetblue'
+  registry: npm
+  url: https://www.npmjs.com/package/@striderlabs/mcp-jetblue
+  transport: stdio
+  official: false
+  method: playwright browser automation against jetblue.com
+  caution: >-
+    Unofficial. Not endorsed by JetBlue; automated access to the consumer site
+    is contractually prohibited by https://www.jetblue.com/legal/website-terms.

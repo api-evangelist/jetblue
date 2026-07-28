@@ -1,0 +1,43 @@
+generated: '2026-07-28'
+method: searched
+source: npm registry search, PyPI, RubyGems, GitHub code/repo search
+result: none
+note: >-
+  JetBlue publishes no first-party client libraries or SDKs in any public
+  package registry, which follows from having no public API. npm, PyPI and
+  RubyGems return no JetBlue-owned package; there is no JetBlue GitHub
+  organization (api.github.com/orgs/jetblue returns 404 — github.com/jetblue is
+  an unrelated personal account). Everything found is third-party and
+  unofficial, built by scraping or automating the consumer website — which
+  jetblue.com's terms of use (section 9.1.5) prohibit without prior written
+  consent.
+packages: []
+third_party:
+- language: javascript
+  registry: npm
+  name: '@striderlabs/mcp-jetblue'
+  url: https://www.npmjs.com/package/@striderlabs/mcp-jetblue
+  official: false
+  description: Community MCP server that drives jetblue.com with Playwright browser automation.
+- language: ruby
+  registry: rubygems
+  name: jetblue_plane_tracker
+  url: https://github.com/briandiaz/jetblue_plane_tracker
+  official: false
+  description: Third-party Ruby wrapper over undocumented JetBlue endpoints.
+- language: python
+  registry: github
+  name: py-jetblue
+  url: https://github.com/minormending/py-jetblue
+  official: false
+  description: Third-party JetBlue fare scraper.
+probes:
+- url: https://registry.npmjs.org/-/v1/search?text=jetblue
+  status: 200
+  note: No JetBlue-published package in results.
+- url: https://pypi.org/pypi/jetblue/json
+  status: 404
+- url: https://rubygems.org/api/v1/gems/jetblue.json
+  status: 404
+- url: https://api.github.com/orgs/jetblue
+  status: 404
