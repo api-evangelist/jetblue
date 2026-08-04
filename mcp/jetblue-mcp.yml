@@ -1,6 +1,7 @@
 generated: '2026-07-28'
 method: searched
-status: none-published
+status: none
+status_raw: none-published
 source: npm registry search, JetBlue site search, MCP registry search
 note: >-
   JetBlue publishes no MCP server, and there is no OpenAPI to derive a
