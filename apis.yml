@@ -42,6 +42,8 @@ modified: '2026-07-28'
 specificationVersion: '0.19'
 apis: []
 common:
+- type: MCPServer
+  url: mcp/jetblue-mcp.yml
 - type: DomainSecurity
   url: security/jetblue-domain-security.yml
 - type: WellKnown
